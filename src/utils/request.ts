@@ -1,14 +1,8 @@
+// import { ResponseResult } from '@/tsd';
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import qs from 'qs'
 
-// 后台接口返回的基本结构
-export interface ResponseResult<T> {
-    success: boolean,
-    data?: T,
-    code?: number,
-    message?: string
-}
-
+// 给axios模块下的接口扩充字段
 declare module 'axios' {
     export interface AxiosRequestConfig {
         key?: string, // 请求的key
@@ -17,16 +11,14 @@ declare module 'axios' {
 
     // 这里好像是不能重写data的类型，只能在重新定义一个属性
     export interface AxiosResponse {
-        data1: ResponseResult<any>,
+        $data: ResponseResult<any>, // 重新定义一种data
     }
 }
 
-// let BASE_API = import.meta.env.VITE_BASE_API;
-
-let BASE_API = "/api-online"
+let BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const instance: AxiosInstance = axios.create({
-    baseURL: BASE_API,
+    baseURL: BASE_URL,
     timeout: 1000 * 60, // 一分钟超时
     responseType: 'json'
 })
@@ -80,10 +72,10 @@ instance.interceptors.request.use((config: any) => {
 })
 
 instance.interceptors.response.use((response: AxiosResponse) => {
-    response.data1 = response.data;
-    const { config, data1: data, statusText } = response
+    // response.$data = response.data;
+    const $data = <ResponseResult<any>>response.data; // 获取接口返回的数据 并转为ResponseResult类型
 
-
+    const { config, statusText } = response
     // response
 
     const key = config.key
@@ -92,10 +84,10 @@ instance.interceptors.response.use((response: AxiosResponse) => {
     }
 
     if (response.status === 200) {
-        if (data.success) {
-            return data.data
+        if ($data.success) {
+            return $data.data
         } else {
-            return Promise.reject(new Error(data.message))
+            return Promise.reject(new Error($data.message))
         }
     }
     return Promise.reject(new Error(statusText))

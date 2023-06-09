@@ -1,42 +1,21 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { NxButton } from 'naive-ui'
-import { list, APIModel } from '@api/api'
+import { create as createWorkspace } from '@api/workspace'
+import { useAppStore } from '@store/app'
+const appStore = useAppStore()
 
-
-let count = ref(100);
-let apiList: Array<APIModel> = reactive([]);
-let error = ref('')
-
-function handleClick() {
-    count.value++
-}
-
-async function listAPI() {
-    try {
-        apiList = await list('xyoFHPWSLqboVSw_Quyzi')
-        console.log(apiList)
-        error.value = JSON.stringify(apiList)
-    } catch (err: any) {
-        console.error(error)
-        error.value = err.message
+// 当前的命名空间
+onBeforeMount(async () => {
+    if (!appStore.workspace) {
+        try {
+            const workspace: WorkspaceModel = await createWorkspace()
+            appStore.addWorkspaces(workspace)
+        } catch (error) {
+        }
     }
-
-}
+})
 
 </script>
 
 <template>
-    <button @click="handleClick">+</button>
-    <div>{{ count }}</div>
-    <nx-button @click="listAPI">GET API</nx-button>
-
-    <div v-if="apiList.length > 0">
-        <div v-for="item in apiList" :key="item.handler">
-            {{ item.method }} {{ item.url }} {{ item.handler }} 
-        </div>
-    </div>
-    <div v-else>
-        {{ error }}
-    </div>
+    <h2>{{ appStore.workspace?.name }}</h2>
 </template>
