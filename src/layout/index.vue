@@ -14,7 +14,6 @@
 
         </div>
         <div class="main">
-            子路由区域
             <RouterView></RouterView>
         </div>
     </div>

@@ -1,7 +1,6 @@
 import { RouteRecordRaw, Router, createRouter, createWebHashHistory } from 'vue-router'
 import Welcome from '@views/welcome/index.vue'
 import Layout from '@/layout/index.vue'
-import { App } from 'vue'
 
 const routes: Array<RouteRecordRaw> = [
     {

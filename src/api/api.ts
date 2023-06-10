@@ -19,17 +19,25 @@ export function list(workspace: string): Promise<Array<APIModel>> {
  * @param data API数据
  * @returns 新增的API数据
  */
-export function create(workspace: string, data: APIModel): Promise<APIModel> {
-    return request.post(`/${workspace}/apis/create`, data)
+export function create(api: APIModel): Promise<APIModel> {
+    return request.post(`/${api.workspace}/apis/create`, api)
+}
+
+export function update(api: APIModel): Promise<APIModel> {
+    return request.put(`/${api.workspace}/apis/${api.id}`, api)
+}
+
+export function remove(api: APIModel): Promise<any> {
+    return request.delete(`${api.workspace}/apis/${api.id}`)
 }
 
 
 // http://localhost:8999/myspace/xyoFHPWSLqboVSw_Quyzi/test/api
-export function test<T>(workspace: string, data: APIModel, body: object): Promise<T> {
+export function execute<T>(api: APIModel, body: object): Promise<T> {
     // 这里还应该有路径动态参数 query参数 以及body信息
     return request({
-        method: data.method,
-        url: `/myspace/${workspace}${data.url}`,
+        method: api.method,
+        url: `/workspace/${api.workspace}${api.url}`,
         data: body,
     })
 }
@@ -37,5 +45,5 @@ export function test<T>(workspace: string, data: APIModel, body: object): Promis
 export default {
     list,
     create,
-    test
+    execute
 }

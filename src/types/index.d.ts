@@ -7,9 +7,11 @@ interface ResponseResult<T> {
 }
 
 interface APIModel {
-    url?: string,
-    code?: string,
-    method?: string
+    id?: string,
+    workspace: string,
+    url: string,
+    code: string,
+    method: string
 }
 
 interface WorkspaceModel {

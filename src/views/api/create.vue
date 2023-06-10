@@ -17,24 +17,39 @@
             }" />
         </n-form-item>
         <div style="display: flex; justify-content: flex-end">
-            <n-button round type="primary" @click="save()">保存</n-button>
+            <n-button round type="primary" @click="handleSave">保存</n-button>
         </div>
     </n-form>
 </template>
 <script setup lang="ts">
 import { FormInst, SelectOption } from 'naive-ui'
-import { create as createApi } from '@api/api'
+import { create as createApi, update as updateApi } from '@api/api'
 import { useAppStore } from '@/store/app'
+import { useRoute } from 'vue-router'
 
 const Message = useMessage()
 const appStore = useAppStore()
+const route = useRoute()
 
 const formRef = ref<FormInst | null>(null)
 
+
 let apiModel: APIModel = reactive({
+    id: '',
+    workspace: appStore.workspace.name,
     method: 'GET',
     url: '/',
     code: 'ctx.body="Hello World";'
+})
+
+onBeforeMount(() => {
+    let query = route.query
+    if (query.id) {
+        apiModel.id = query.id as string
+        apiModel.code = query.code as string
+        apiModel.method = query.method as string
+        apiModel.url = query.url as string
+    }
 })
 
 const methodOptions: Array<SelectOption> = [{
@@ -45,7 +60,7 @@ const methodOptions: Array<SelectOption> = [{
     value: 'POST',
 }, {
     label: 'DELETE',
-    value: 'POST'
+    value: 'DELETE'
 }]
 
 const rules = {
@@ -66,16 +81,27 @@ const rules = {
     }
 }
 
-function changeMethod() {
+const changeMethod = () => {
     console.log()
 }
 
-async function save() {
-    try {
-        await createApi(appStore.workspace.name, apiModel)
-        Message.success('API创建成功！')
-    } catch (error: any) {
-        Message.error(error.message)
+const handleSave = async () => {
+    if (apiModel.id) {
+        // 编辑
+        try {
+            await updateApi(apiModel)
+            Message.success('API编辑成功！')
+        } catch (error: any) {
+            Message.error(error.message)
+        }
+    } else {
+        // 新建
+        try {
+            await createApi(apiModel)
+            Message.success('API创建成功！')
+        } catch (error: any) {
+            Message.error(error.message)
+        }
     }
 }
 </script>

@@ -15,7 +15,6 @@ function pathResolve(dir: string): string {
   return resolve(__dirname, './', dir)
 }
 
-
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const ENV = loadEnv(mode, process.cwd())
@@ -53,7 +52,7 @@ export default defineConfig(({ command, mode }) => {
       vue({
 
       }),
-      // 自动引入vue和naive-ui插件
+      // 自动引入vue和naive-ui的相关方法
       AutoImport({
         imports: [
           'vue',
@@ -67,8 +66,11 @@ export default defineConfig(({ command, mode }) => {
           }
         ]
       }),
+      // 自动引入naive-ui组件
       Components({
+        dirs: ['src/components'], // 这些目录里面的组件支持自动引入
         resolvers: [NaiveUiResolver()]
+        
       }),
       // 给HTML页面注入数据
       createHtmlPlugin(
