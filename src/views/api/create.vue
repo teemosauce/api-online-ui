@@ -1,26 +1,3 @@
-<template>
-    <div>表单</div>
-
-    <n-form ref="formRef" :model="apiModel" :rules="rules" label-placement="left" label-width="auto" require-mark-placement="right-hanging" size="medium">
-        <n-form-item label="请求方式" path="method">
-            <n-select v-model:value="apiModel.method" :options="methodOptions" @update-value="changeMethod">
-            </n-select>
-        </n-form-item>
-        <n-form-item label="请求路径" path="url">
-            <n-input v-model:value="apiModel.url" placeholder="请输入请求路径" />
-        </n-form-item>
-
-        <n-form-item label="实现方法" path="code">
-            <n-input v-model:value="apiModel.code" placeholder="请输入方法实现" type="textarea" :autosize="{
-                minRows: 3,
-                maxRows: 5
-            }" />
-        </n-form-item>
-        <div style="display: flex; justify-content: flex-end">
-            <n-button round type="primary" @click="handleSave">保存</n-button>
-        </div>
-    </n-form>
-</template>
 <script setup lang="ts">
 import { FormInst, SelectOption } from 'naive-ui'
 import { create as createApi, update as updateApi } from '@api/api'
@@ -33,11 +10,12 @@ const route = useRoute()
 
 const formRef = ref<FormInst | null>(null)
 
+type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 let apiModel: APIModel = reactive({
     id: '',
     workspace: appStore.workspace.name,
-    method: 'GET',
+    method: <Method>'GET',
     url: '/',
     code: 'ctx.body="Hello World";'
 })
@@ -52,16 +30,13 @@ onBeforeMount(() => {
     }
 })
 
-const methodOptions: Array<SelectOption> = [{
-    label: 'GET',
-    value: 'GET',
-}, {
-    label: 'POST',
-    value: 'POST',
-}, {
-    label: 'DELETE',
-    value: 'DELETE'
-}]
+let methods: Array<Method> = ['GET', 'POST', 'PUT', 'DELETE']
+const methodOptions: Array<SelectOption> = methods.map((method) => {
+    return {
+        label: method,
+        value: method,
+    }
+})
 
 const rules = {
     method: {
@@ -84,24 +59,52 @@ const rules = {
 const changeMethod = () => {
     console.log()
 }
-
 const handleSave = async () => {
-    if (apiModel.id) {
-        // 编辑
-        try {
-            await updateApi(apiModel)
-            Message.success('API编辑成功！')
-        } catch (error: any) {
-            Message.error(error.message)
-        }
-    } else {
-        // 新建
-        try {
-            await createApi(apiModel)
-            Message.success('API创建成功！')
-        } catch (error: any) {
-            Message.error(error.message)
+    let valid = false
+    try {
+        await formRef.value?.validate()
+        valid = true
+    } catch {
+    } finally {
+        if (valid) {
+            if (apiModel.id) {
+                // 编辑
+                try {
+                    await updateApi(apiModel)
+                    Message.success('API编辑成功！')
+                } catch (error: any) {
+                    Message.error(error.message)
+                }
+            } else {
+                // 新建
+                try {
+                    await createApi(apiModel)
+                    Message.success('API创建成功！')
+                } catch (error: any) {
+                    Message.error(error.message)
+                }
+            }
         }
     }
+
 }
 </script>
+
+<template>
+    <n-form ref="formRef" :model="apiModel" :rules="rules" label-placement="left" label-width="auto" require-mark-placement="right-hanging" size="medium">
+        <n-form-item label="请求方式" path="method">
+            <n-select v-model:value="apiModel.method" :options="methodOptions" @update-value="changeMethod">
+            </n-select>
+        </n-form-item>
+        <n-form-item label="请求路径" path="url">
+            <n-input v-model:value="apiModel.url" placeholder="请输入请求路径" />
+        </n-form-item>
+
+        <n-form-item label="实现方法" path="code">
+            <code-editor v-model:value="apiModel.code" mode="javascript"></code-editor>
+        </n-form-item>
+        <div style="display: flex; justify-content: flex-end">
+            <n-button round type="primary" @click="handleSave">保存</n-button>
+        </div>
+    </n-form>
+</template>

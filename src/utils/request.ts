@@ -87,7 +87,7 @@ instance.interceptors.response.use((response: AxiosResponse) => {
         if ($data.success) {
             return $data.data
         } else {
-            return Promise.reject(new Error($data.message))
+            return Promise.reject(new Error($data.data || $data.message))
         }
     }
     return Promise.reject(new Error(statusText))
