@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     ApiExecuter: typeof import('./src/components/ApiExecuter.vue')['default']
     CodeEditor: typeof import('./src/components/CodeEditor/index.vue')['default']
-    Components: typeof import('./src/components/index.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
@@ -22,7 +21,6 @@ declare module 'vue' {
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
     NModal: typeof import('naive-ui')['NModal']
     NSelect: typeof import('naive-ui')['NSelect']
-    NTag: typeof import('naive-ui')['NTag']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

@@ -30,6 +30,8 @@ export default defineConfig(({ command, mode }) => {
   })
 
   return {
+    // base: mode == 'production' ? '/api-online' : '/', // 静态资源的引用路径 
+    base: '/',
     resolve: {
 
       // 配置完alias, 要想编辑器还能自动提示路径，需要配置tsconfig.json中的compilerOptions
@@ -70,7 +72,7 @@ export default defineConfig(({ command, mode }) => {
       Components({
         dirs: ['src/components'], // 这些目录里面的组件支持自动引入
         resolvers: [NaiveUiResolver()]
-        
+
       }),
       // 给HTML页面注入数据
       createHtmlPlugin(
@@ -92,7 +94,9 @@ export default defineConfig(({ command, mode }) => {
           changeOrigin: true,
           rewrite: (path) => {
             console.log(VITE_BASE_URL, VITE_BASE_API_PROXY, path)
-            return path.replace(REPLACE_BASE_URL_REG, '')
+            // 拼不拼 VITE_BASE_URL
+            // return path.replace(REPLACE_BASE_URL_REG, '')
+            return path
           },
         }
       }
